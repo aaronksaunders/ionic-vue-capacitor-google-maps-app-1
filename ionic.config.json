@@ -1,0 +1,7 @@
+{
+  "name": "map-vv",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
