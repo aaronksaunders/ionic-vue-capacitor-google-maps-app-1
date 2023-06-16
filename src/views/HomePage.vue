@@ -33,7 +33,6 @@ import {
   IonTitle,
   IonToolbar,
   IonPopover,
-  IonModal,
   modalController,
 } from "@ionic/vue";
 import { ref } from "vue";
@@ -44,6 +43,7 @@ import { Capacitor } from "@capacitor/core";
 const markerInfo = ref<any>();
 const markerIsOpen = ref<boolean>(false);
 
+// sample data for the map
 const markerData = [
   {
     coordinate: { lat: 37.769, lng: -122.446 },
@@ -63,6 +63,12 @@ const markerData = [
   // Add more points as needed
 ];
 
+/**
+ * used with the web implementation to show information
+ * on the marker that was clicked
+ * 
+ * @param marker 
+ */
 const openModal = async (marker: any) => {
   const modal = await modalController.create({
     component: MarkerInfoWindow,
@@ -81,10 +87,19 @@ const openModal = async (marker: any) => {
   const { data, role } = await modal.onWillDismiss();
 };
 
+/**
+ * event listener for map click
+ */
 const mapClicked = () => {
   console.log("mapClicked");
 };
 
+/**
+ * used for getting the information associated with the marker
+ * that was clicked. This is only used in the web implementation
+ * 
+ * @param marker 
+ */
 const getMarkerInfo = (marker: { latitude: number; longitude: number }) => {
   return markerData.filter(
     (m) =>
@@ -93,6 +108,14 @@ const getMarkerInfo = (marker: { latitude: number; longitude: number }) => {
   )[0];
 };
 
+/**
+ * The web version of the map doesnt show an info window so
+ * for demonstration purposes, you just display a modal with
+ * the information in the marker that was clicked
+ * 
+ * This is only used in the web implementation
+ * @param event 
+ */
 const markerClicked = (event: any) => {
   console.log(event);
 

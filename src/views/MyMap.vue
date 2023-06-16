@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { onMounted, nextTick, ref, onUnmounted } from "vue";
 import { GoogleMap } from "@capacitor/google-maps";
-import { onIonViewWillLeave, IonPopover, IonContent } from "@ionic/vue";
-import { CapacitorGoogleMaps } from "@capacitor/google-maps/dist/typings/implementation";
 
 // PROPS
 const props = defineProps<{
   markerData: { coordinate: any; title: string; snippet: string }[];
 }>();
+// EVENTS
 const emits = defineEmits<{
   (event: "onMarkerClicked", info: any): void;
   (event: "onMapClicked"): void;
@@ -17,17 +16,24 @@ const mapRef = ref<HTMLElement>();
 const markerIds = ref<string[] | undefined>();
 let newMap: GoogleMap;
 
+// we need to wait for the element that the map will be associated
+// with to be in the DOM
 onMounted(async () => {
   console.log("mounted ", mapRef.value);
   await nextTick();
   await createMap();
 });
 
+// remove markers on unmount
 onUnmounted(() => {
   console.log("onunmounted");
   newMap.removeMarkers(markerIds?.value as string[]);
 });
 
+/**
+ * add markers to map using prop passed in to component
+ * @param newMap 
+ */
 const addSomeMarkers = async (newMap: GoogleMap) => {
   markerIds?.value && newMap.removeMarkers(markerIds?.value as string[]);
 
@@ -36,16 +42,20 @@ const addSomeMarkers = async (newMap: GoogleMap) => {
     return {
       coordinate,
       title,
-      snippet
+      snippet,
     };
   });
 
   markerIds.value = await newMap.addMarkers(markers);
 };
 
+/**
+ * 
+ */
 async function createMap() {
   if (!mapRef.value) return;
 
+  // render map using capacitor plugin
   newMap = await GoogleMap.create({
     id: "my-cool-map",
     element: mapRef.value,
@@ -59,16 +69,17 @@ async function createMap() {
     },
   });
 
+  // add markers to map
   addSomeMarkers(newMap);
 
-  // Handle marker click
+  // Set Event Listeners...
+  // Handle marker click, send event back to parent
   newMap.setOnMarkerClickListener((event) => {
-    debugger
     emits("onMarkerClicked", event);
   });
 
+  // Handle map click, send event back to parent
   newMap.setOnMapClickListener(() => {
-    debugger;
     emits("onMapClicked");
   });
 }
@@ -80,6 +91,5 @@ async function createMap() {
       style="display: inline-block; width: 100vw; height: 86vh"
     >
     </capacitor-google-map>
-
   </div>
 </template>

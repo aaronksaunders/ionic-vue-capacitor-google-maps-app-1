@@ -5,14 +5,7 @@
 </template>
 <script setup lang="ts">
 import {
-  IonButton,
-  IonCol,
   IonContent,
-  IonGrid,
-  IonIcon,
-  IonLabel,
-  IonNote,
-  IonRow,
 } from "@ionic/vue";
 
 // PROPS
